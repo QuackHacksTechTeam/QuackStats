@@ -1,6 +1,7 @@
 
 import gh_requests 
 
+
 def main(): 
 
     commit_history = gh_requests.get_commit_history("QuackHacksTechTeam", "GitRank")
