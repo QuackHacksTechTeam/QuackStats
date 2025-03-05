@@ -7,7 +7,7 @@ frontend
 
 """
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +18,9 @@ from response_types import RepoCommits
 
 #---------------------------------------------------
 load_dotenv()
-app = Flask(__name__)
+FRONTEND_PATH = "../frontend/build"
+app = Flask(__name__, static_folder=FRONTEND_PATH + '/static', static_url_path='/static')
+
 PORT = int(os.getenv("PORT", 5000))
 HOST = os.getenv("HOST", "localhost")
 
@@ -26,6 +28,13 @@ REPO_TEXT_FILE = "repos.txt"
 REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
 # ---------------------------------------------------
 
+
+@app.route('/')
+def serve_react_app():
+    return send_from_directory(os.path.join(app.root_path, FRONTEND_PATH), 'index.html')
+
+
+# ----------------------- API --------------------------
 
 @app.route('/commits', methods=['GET'])
 def get_commit_data(): 
