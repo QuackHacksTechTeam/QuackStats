@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 
 import gh_requests 
 import repo_url_reader
-from response_types import RepoCommits
 
 
 #---------------------------------------------------
@@ -36,38 +35,39 @@ def serve_react_app():
 
 # ----------------------- API --------------------------
 
-@app.route('/commits', methods=['GET'])
-def get_commit_data(): 
+@app.route('/user-commits', methods=['GET'])
+def get_user_commits(): 
     """
-    Send all commit history in json 
-    Sends all in one response to limit the api requests to github 
+    Send all user commit history in json 
 
     """
 
-    all_repo_commits: list[RepoCommits] = []
+    all_user_commits = {}
     for repo_url in REPO_URLS: 
         if not repo_url: 
             continue
 
+        # Parse the url 
         parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
         if parsed_url is None: 
             print(f"Error parsing repo url: {repo_url}")
             continue
-
         owner, reponame = parsed_url
 
-        commit_history = gh_requests.get_commit_history(owner, reponame)
+        # Try to append all users commits to the overall dict 
+        try: 
+            users_commit_history = gh_requests.commit_history_by_user(owner, reponame)
+            for user, num_commits in users_commit_history.items(): 
+                if user not in all_user_commits: 
+                    all_user_commits[user] = num_commits
+                else: 
+                    all_user_commits[user] += num_commits
 
-        if (commit_history is None): 
+        except Exception:  
             return jsonify({ "Error": "Invalid GitHub API request" })
 
-        user_commits = gh_requests.get_user_commits(commit_history)
-        user_commit_ranking = { user: user_commits.count(user) for user in set(user_commits) }
-
-        repo = RepoCommits(owner=owner, name=reponame, user_commits=user_commit_ranking)
-        all_repo_commits.append(repo)
-
-    return jsonify(all_repo_commits)
+    all_user_commit_list = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
+    return jsonify(all_user_commit_list)
 
 
 if __name__ == "__main__": 
