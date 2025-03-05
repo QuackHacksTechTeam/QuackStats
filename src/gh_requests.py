@@ -1,10 +1,8 @@
 
 import requests 
 
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 GITHUB_API_REPO_URL = f"https://api.github.com/repos"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -21,6 +19,7 @@ def get_commit_history(owner: str, repo: str):
               }
 
     url = f"{GITHUB_API_REPO_URL}/{owner}/{repo}/commits"
+    print(url)
 
     response = requests.get(url, headers=headers)
     return response.json() if response.status_code == 200 else None 
