@@ -11,12 +11,14 @@ def read_urls(file_name: str) -> list[str]:
             urls.append(url.strip())
     return urls; 
 
-def get_owner_reponame(url: str) -> tuple[str, str]: 
+def get_owner_reponame(url: str) -> tuple[str, str] | None: 
     parts = url.split('/')
-    owner = parts[3]
-    repo = parts[4]
+    if parts and len(parts) == 5: 
+        owner = parts[3]
+        repo = parts[4]
+        return (owner, repo)
 
-    return (owner, repo)
+    return None
 
 
 

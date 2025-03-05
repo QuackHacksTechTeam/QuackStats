@@ -24,7 +24,7 @@ app = Flask(__name__, static_folder=FRONTEND_PATH + '/static', static_url_path='
 PORT = int(os.getenv("PORT", 5000))
 HOST = os.getenv("HOST", "localhost")
 
-REPO_TEXT_FILE = "repos.txt"
+REPO_TEXT_FILE = "../repos.txt"
 REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
 # ---------------------------------------------------
 
@@ -46,7 +46,15 @@ def get_commit_data():
 
     all_repo_commits: list[RepoCommits] = []
     for repo_url in REPO_URLS: 
-        owner, reponame = repo_url_reader.get_owner_reponame(repo_url)
+        if not repo_url: 
+            continue
+
+        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
+        if parsed_url is None: 
+            print(f"Error parsing repo url: {repo_url}")
+            continue
+
+        owner, reponame = parsed_url
 
         commit_history = gh_requests.get_commit_history(owner, reponame)
 
