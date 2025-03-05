@@ -1,42 +1,18 @@
 
-
-import requests 
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-OWNER = "QuackHacksTechTeam"
-REPO = "GitRank"
-GITHUB_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/commits"
-TOKEN = os.getenv("GITHUB_TOKEN")
-
-
-def get_user_commits(owner: str, repo: str): 
-
-    headers = { 
-               "Accept": "application/vnd.github+json",
-               "Authorization": f"Bearer {TOKEN}",
-               "X-Github-API-Version": "2022-11-28"
-              }
-
-    response = requests.get(GITHUB_API_URL, headers=headers)
-    if response.status_code != 200: 
-        return None
-
-    users = []
-    for commit in response.json(): 
-        users.append(commit["committer"]["login"])
-
-    return users; 
-
+import gh_requests 
 
 def main(): 
 
-    commits = get_user_commits(OWNER, REPO)
-    print(commits)
+    commit_history = gh_requests.get_commit_history("QuackHacksTechTeam", "GitRank")
 
+    if (commit_history is None): 
+        print("Invalid request")
+        return 
+        
+    commits = gh_requests.get_user_commits(commit_history)
+    commit_ranking = { user: commits.count(user) for user in set(commits) }
+
+    print(commit_ranking)
 
 
 if __name__ == "__main__": 
