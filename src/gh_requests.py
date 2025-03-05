@@ -19,7 +19,6 @@ def get_commit_history(owner: str, repo: str):
               }
 
     url = f"{GITHUB_API_REPO_URL}/{owner}/{repo}/commits"
-    print(url)
 
     response = requests.get(url, headers=headers)
     return response.json() if response.status_code == 200 else None 
@@ -31,13 +30,22 @@ def get_user_commits(commit_history) -> list[str]:
     User will repeat with each commit 
 
     """
-
     users = []
     for commit in commit_history: 
-        user = commit["committer"]["login"]
-        if (user != "web-flow"): 
-            users.append(commit["committer"]["login"])
+        if commit is None: 
+            continue
+        if "commit" not in commit: 
+            continue
+        if commit["commit"] is None:  # Ensure committer is not None
+            continue
 
-    return users; 
+        user = commit["commit"]["author"]["name"]
+        if user is None: 
+            user = commit["committer"]["name"]
+
+        if user != "web-flow":  # Avoid adding "web-flow"
+            users.append(user)
+
+    return users
 
 

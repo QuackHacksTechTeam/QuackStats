@@ -49,6 +49,7 @@ def get_commit_data():
         owner, reponame = repo_url_reader.get_owner_reponame(repo_url)
 
         commit_history = gh_requests.get_commit_history(owner, reponame)
+
         if (commit_history is None): 
             return jsonify({ "Error": "Invalid GitHub API request" })
 
@@ -59,7 +60,6 @@ def get_commit_data():
         all_repo_commits.append(repo)
 
     return jsonify(all_repo_commits)
-
 
 
 if __name__ == "__main__": 

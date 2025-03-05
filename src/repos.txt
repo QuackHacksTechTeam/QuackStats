@@ -1,2 +1,1 @@
-https://github.com/QuackHacksTechTeam/GitRank
-https://github.com/Josiah-Kitchin/Ray-Tracer
+https://github.com/Josiah-Kitchin/CodeBounty
