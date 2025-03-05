@@ -18,7 +18,7 @@ def get_commit_history(owner: str, repo: str):
                "X-Github-API-Version": "2022-11-28"
               }
 
-    url = f"{GITHUB_API_REPO_URL}/{owner}/{repo}/commits"
+    url = f"{GITHUB_API_REPO_URL}/{owner}/{repo}/commits?per_page=100"
 
     response = requests.get(url, headers=headers)
     return response.json() if response.status_code == 200 else None 
