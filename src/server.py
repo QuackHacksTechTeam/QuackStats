@@ -28,12 +28,54 @@ REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
 # ---------------------------------------------------
 
 
-@app.route('/')
-def serve_react_app():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react_app(path):
     return send_from_directory(os.path.join(app.root_path, FRONTEND_PATH), 'index.html')
 
 
 # ----------------------- API --------------------------
+
+@app.route('/api/repo-commits', methods=["GET"])
+def get_repo_commits(): 
+    """
+    Send all repo commit history in json in the form 
+
+    [
+        {
+            repo_name: string, 
+            commits: int 
+        }
+        ...
+    ]
+
+
+    """
+    all_repo_commits = []
+    for repo_url in REPO_URLS: 
+        if not repo_url:
+            continue
+
+        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
+        if parsed_url is None: 
+            print(f"Error parsing repo url: {repo_url}")
+            continue
+        owner, reponame = parsed_url
+
+        try: 
+            repo_commits = gh_requests.commit_history_by_repo(owner, reponame)
+            all_repo_commits.append(repo_commits)
+
+        except Exception: 
+            return jsonify({ "Error": "Invalid GitHub API request" })
+
+    all_repo_commits_labeld = [{"repo_name": list(item.keys())[0], "commits": list(item.values())[0]} for item in all_repo_commits]
+    
+    return jsonify(all_repo_commits_labeld)
+        
+
+    
+
 
 @app.route('/api/user-commits', methods=['GET'])
 def get_user_commits(): 
@@ -74,8 +116,8 @@ def get_user_commits():
         except Exception:  
             return jsonify({ "Error": "Invalid GitHub API request" })
 
-    all_user_commit_list = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
-    return jsonify(all_user_commit_list)
+    all_user_commit_labeled = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
+    return jsonify(all_user_commit_labeled)
 
 
 if __name__ == "__main__": 

@@ -4,6 +4,19 @@ import os
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
+def commit_history_by_repo(owner: str, repo_name: str) -> dict[str, int]: 
+    """
+    Returns a dict containing the repo name and
+    the total number of commits from  the repo 
+
+    """
+    g = Github(GITHUB_TOKEN) 
+    repo = g.get_repo(f"{owner}/{repo_name}")
+
+    commits = repo.get_commits().totalCount
+    return { repo_name: commits }
+
+
 def commit_history_by_user(owner: str, repo_name: str) -> dict[str, int]: 
     """
     Returns a dict containing the number of commits 
@@ -27,6 +40,7 @@ def commit_history_by_user(owner: str, repo_name: str) -> dict[str, int]:
             continue
 
         user = commit.author.login
+
         if user in user_commits: 
             user_commits[user] += 1
         else: 
