@@ -6,6 +6,9 @@ A website for displaying GitHub API stats during the hackathon.
 - Top 5 GitHub Committers
 - Top 5 Repos with Most Commits
 
+![Demo Image](./demo_image/gitrank.png)
+
+
 ## How to Run Locally
 
 ### Backend
