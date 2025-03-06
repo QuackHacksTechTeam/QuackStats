@@ -17,23 +17,25 @@ A website for displaying GitHub API stats during the hackathon.
     python3 -m venv venv
     ```
 
-2. (If you are on a Unix machine, you can use the Makefile to enter and start the server)
-
-3. Install the required dependencies:
+2. Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
 
-4. Create a `.env` file based on the `.env_template` file.
+3. Create a `.env` file based on the `.env_template` file.
 
-5. The GitHub token can be created by navigating to GitHub -> Settings -> Developer Settings.
+4. The GitHub token can be created by navigating to GitHub -> Settings -> Developer Settings.
 
-6. Fill the 'repos.txt' file with all the repos you want to use in your data set. Each url must be seperated by a new line
+5. Fill the 'repos.txt' file with all the repos you want to use in your data set. Each url must be seperated by a new line
 
-7. Run the server:
+6. Run the server:
     ```bash
     python3 server.py
     ```
+  Or use the makefile from outside the src dir 
+  ```bash
+  make start
+  ```
 
 ### Frontend
 If you want to make changes to the frontend, you can work in the frontend in this repo 
