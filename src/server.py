@@ -28,6 +28,7 @@ REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
 # ---------------------------------------------------
 
 
+# Send all unknown paths to the root 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react_app(path):
@@ -67,7 +68,7 @@ def get_repo_commits():
             all_repo_commits.append(repo_commits)
 
         except Exception: 
-            return jsonify({ "Error": "Invalid GitHub API request" })
+            return jsonify({ "Error": "Invalid GitHub API request" }), 500
 
     all_repo_commits_labeld = [{"repo_name": list(item.keys())[0], "commits": list(item.values())[0]} for item in all_repo_commits]
     
@@ -114,7 +115,7 @@ def get_user_commits():
                     all_user_commits[user] += num_commits
 
         except Exception:  
-            return jsonify({ "Error": "Invalid GitHub API request" })
+            return jsonify({ "Error": "Invalid GitHub API request" }), 500
 
     all_user_commit_labeled = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
     return jsonify(all_user_commit_labeled)
