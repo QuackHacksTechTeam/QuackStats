@@ -36,7 +36,10 @@ A website for displaying GitHub API stats during the hackathon.
     ```
 
 ### Frontend
-1. If you want to make changes to the frontend, install the dependencies:
+If you want to make changes to the fronend, you can work in the frontend in this repo 
+or the QuackStats-Frontend, as its a submodule 
+
+1. install the dependencies:
     ```bash
     npm install
     ```
