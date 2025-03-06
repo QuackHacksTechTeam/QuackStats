@@ -1,7 +1,43 @@
 # GitRank
 
-Backend for collecting repo data from github repos 
+A website for displaying GitHub API stats during the hackathon.
 
-Basically just a wrapper around the github api
+## Charts
+- Top 5 GitHub Committers
+- Top 5 Repos with Most Commits
 
+## How to Run Locally
+
+### Backend
+1. Create a virtual environment:
+    ```bash
+    python3 -m venv venv
+    ```
+
+2. (If you are on a Unix machine, you can use the Makefile to enter and start the server)
+
+3. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Create a `.env` file based on the `.env_template` file.
+
+5. The GitHub token can be created by navigating to GitHub -> Settings -> Developer Settings.
+
+6. Run the server:
+    ```bash
+    python3 server.py
+    ```
+
+### Frontend
+1. If you want to make changes to the frontend, install the dependencies:
+    ```bash
+    npm install
+    ```
+
+2. To build the frontend:
+    ```bash
+    npm run build
+    ```
 
