@@ -25,7 +25,9 @@ A website for displaying GitHub API stats during the hackathon.
 
 5. The GitHub token can be created by navigating to GitHub -> Settings -> Developer Settings.
 
-6. Run the server:
+6. Fill the 'repos.txt' file with all the repos you want to use in your data set. Each url must be seperated by a new line
+
+7. Run the server:
     ```bash
     python3 server.py
     ```
