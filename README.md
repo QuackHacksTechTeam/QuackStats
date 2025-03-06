@@ -5,6 +5,7 @@ A website for displaying GitHub API stats during the hackathon.
 ## Charts
 - Top 5 GitHub Committers
 - Top 5 Repos with Most Commits
+- Top 5 Users with Most Lines of Code
 
 ![Demo Image](./demo_image/quackstats.png)
 
