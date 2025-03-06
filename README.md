@@ -51,3 +51,4 @@ or the QuackStats-Frontend, as its a submodule
     npm run build
     ```
 
+
