@@ -1,13 +1,40 @@
 
 
-/commits:
+# API Documentation
 
-Get current commit history from repos 
+## Endpoint: Get User Commits
 
+### URL
+`/api/user-commits`
+
+### Method
+`GET`
+
+### Description
+Retrieves all user commit history in JSON format.
+
+### Response Format
+```json
 [
-    owner: string
-    name: string
-    user_commits: { 
-        usernames: int (number of commits to this repo)
+    {
+        "username": "string",
+        "commits": int
+    },
+    ...
+]
+```
+
+### Example Response
+```json
+[
+    {
+        "username": "johndoe",
+        "commits": 42
+    },
+    {
+        "username": "janedoe",
+        "commits": 35
     }
 ]
+```
+

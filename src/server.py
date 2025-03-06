@@ -35,10 +35,18 @@ def serve_react_app():
 
 # ----------------------- API --------------------------
 
-@app.route('/user-commits', methods=['GET'])
+@app.route('/api/user-commits', methods=['GET'])
 def get_user_commits(): 
     """
-    Send all user commit history in json 
+    Send all user commit history in json in the form 
+
+    [
+        {
+            username: string, 
+            commits: int 
+        }
+        ...
+    ]
 
     """
 

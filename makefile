@@ -1,7 +1,7 @@
 
 
 
+start:
+	cd src && . venv/bin/activate && python3 server.py
 
-start: 
-	cd src && python3 server.py && cd ..
 
