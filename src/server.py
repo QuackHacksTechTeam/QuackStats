@@ -27,6 +27,7 @@ REPO_TEXT_FILE = "../repos.txt"
 REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
 # ---------------------------------------------------
 
+print(f"Using urls {REPO_URLS}...")
 
 # Send all unknown paths to the root 
 @app.route('/', defaults={'path': ''})
@@ -36,6 +37,49 @@ def serve_react_app(path):
 
 
 # ----------------------- API --------------------------
+
+@app.route('/api/user-loc', methods=["GET"])
+def get_user_lines_of_code(): 
+    """
+    Sends a list of all users from a repo with their total contributed lines of code
+
+    In the JSON form 
+    [
+        {
+            username: string, 
+            lines_of_code: number
+        }
+        ...
+    ]
+
+    """
+    all_user_lines_of_code = {}
+    for repo_url in REPO_URLS: 
+        if not repo_url: 
+            continue
+
+        # Parse the url 
+        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
+        if parsed_url is None: 
+            print(f"Error parsing repo url: {repo_url}")
+            continue
+        owner, reponame = parsed_url
+
+        try: 
+            users_lines_of_code = gh_requests.lines_of_code_by_user(owner, reponame)
+            print(f"Found {users_lines_of_code}")
+            for user, lines_of_code in users_lines_of_code.items(): 
+                if user not in all_user_lines_of_code: 
+                    all_user_lines_of_code[user] = lines_of_code 
+                else: 
+                    all_user_lines_of_code[user] += lines_of_code 
+
+        except Exception as error:  
+            return jsonify({ "Error": str(error) }), 500
+
+    all_user_commit_labeled = [{"username": user, "lines_of_code": count} for user, count in all_user_lines_of_code.items()]
+    return jsonify(all_user_commit_labeled)
+    
 
 @app.route('/api/repo-commits', methods=["GET"])
 def get_repo_commits(): 
