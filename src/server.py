@@ -11,8 +11,8 @@ from flask import Flask, jsonify, send_from_directory
 import os
 from dotenv import load_dotenv
 
-import gh_requests 
-import repo_url_reader
+from gh_requests import requests
+from utils.repo_url_reader import read_urls, parse_urls
 
 
 #---------------------------------------------------
@@ -24,10 +24,11 @@ PORT = int(os.getenv("PORT", 5000))
 HOST = os.getenv("HOST", "localhost")
 
 REPO_TEXT_FILE = "../repos.txt"
-REPO_URLS = repo_url_reader.read_urls(REPO_TEXT_FILE)
+# A list of tuples, containing owner, repo 
+OWNERS_REPOS = parse_urls(read_urls(REPO_TEXT_FILE))
+print(f"Using repos: {OWNERS_REPOS}...")
 # ---------------------------------------------------
 
-print(f"Using urls {REPO_URLS}...")
 
 # Send all unknown paths to the root 
 @app.route('/', defaults={'path': ''})
@@ -54,19 +55,10 @@ def get_user_lines_of_code():
 
     """
     all_user_lines_of_code = {}
-    for repo_url in REPO_URLS: 
-        if not repo_url: 
-            continue
 
-        # Parse the url 
-        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
-        if parsed_url is None: 
-            print(f"Error parsing repo url: {repo_url}")
-            continue
-        owner, reponame = parsed_url
-
+    for owner, reponame in OWNERS_REPOS: 
         try: 
-            users_lines_of_code = gh_requests.lines_of_code_by_user(owner, reponame)
+            users_lines_of_code = requests.lines_of_code_by_user(owner, reponame)
             print(f"Found {users_lines_of_code}")
             for user, lines_of_code in users_lines_of_code.items(): 
                 if user not in all_user_lines_of_code: 
@@ -79,7 +71,7 @@ def get_user_lines_of_code():
 
     all_user_commit_labeled = [{"username": user, "lines_of_code": count} for user, count in all_user_lines_of_code.items()]
     return jsonify(all_user_commit_labeled)
-    
+
 
 @app.route('/api/repo-commits', methods=["GET"])
 def get_repo_commits(): 
@@ -93,22 +85,11 @@ def get_repo_commits():
         }
         ...
     ]
-
-
     """
     all_repo_commits = []
-    for repo_url in REPO_URLS: 
-        if not repo_url:
-            continue
-
-        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
-        if parsed_url is None: 
-            print(f"Error parsing repo url: {repo_url}")
-            continue
-        owner, reponame = parsed_url
-
+    for owner, reponame in OWNERS_REPOS: 
         try: 
-            repo_commits = gh_requests.commit_history_by_repo(owner, reponame)
+            repo_commits = requests.commit_history_by_repo(owner, reponame)
             all_repo_commits.append(repo_commits)
 
         except Exception: 
@@ -118,8 +99,6 @@ def get_repo_commits():
     
     return jsonify(all_repo_commits_labeld)
         
-
-    
 
 
 @app.route('/api/user-commits', methods=['GET'])
@@ -138,20 +117,11 @@ def get_user_commits():
     """
 
     all_user_commits = {}
-    for repo_url in REPO_URLS: 
-        if not repo_url: 
-            continue
-
-        # Parse the url 
-        parsed_url = repo_url_reader.get_owner_reponame(repo_url) 
-        if parsed_url is None: 
-            print(f"Error parsing repo url: {repo_url}")
-            continue
-        owner, reponame = parsed_url
+    for owner, reponame in OWNERS_REPOS: 
 
         # Try to append all users commits to the overall dict 
         try: 
-            users_commit_history = gh_requests.commit_history_by_user(owner, reponame)
+            users_commit_history = requests.commit_history_by_user(owner, reponame)
             for user, num_commits in users_commit_history.items(): 
                 if user not in all_user_commits: 
                     all_user_commits[user] = num_commits
