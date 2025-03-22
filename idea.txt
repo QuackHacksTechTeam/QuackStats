@@ -1,0 +1,4 @@
+
+
+make the data reload every 5 minutes so it doesnt have to wait on loading times
+

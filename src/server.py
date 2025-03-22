@@ -26,7 +26,6 @@ HOST = os.getenv("HOST", "localhost")
 REPO_TEXT_FILE = "../repos.txt"
 # A list of tuples, containing owner, repo 
 OWNERS_REPOS = parse_urls(read_urls(REPO_TEXT_FILE))
-print(f"Using repos: {OWNERS_REPOS}...")
 # ---------------------------------------------------
 
 
@@ -119,7 +118,7 @@ def get_user_commits():
     all_user_commits = {}
     for owner, reponame in OWNERS_REPOS: 
 
-        # Try to append all users commits to the overall dict 
+        # Try to append all users commits to the all user commits dict 
         try: 
             users_commit_history = requests.commit_history_by_user(owner, reponame)
             for user, num_commits in users_commit_history.items(): 
@@ -134,6 +133,26 @@ def get_user_commits():
     all_user_commit_labeled = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
     return jsonify(all_user_commit_labeled)
 
+
+@app.route("/api/repos-in-use", methods=["GET"])
+def get_repos_in_use(): 
+    """
+    Returns a list of all repos in use 
+
+    [
+        <reponame>, 
+        ...
+    ]
+    
+    """
+    all_repos = []
+    for _, reponame in OWNERS_REPOS: 
+        all_repos.append(reponame)
+
+    return jsonify(all_repos)
+
+
+    
 
 if __name__ == "__main__": 
     app.run(host=HOST, port=PORT, debug=True)
