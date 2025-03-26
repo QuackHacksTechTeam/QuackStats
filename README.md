@@ -1,6 +1,7 @@
 # QuackStats
 
 A website for displaying GitHub API stats during the hackathon.
+Reloads statistics every 30 minutes. 
 
 ## Charts
 - Top 5 GitHub Committers
