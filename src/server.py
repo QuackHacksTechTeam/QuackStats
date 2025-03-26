@@ -58,7 +58,6 @@ def get_user_lines_of_code():
     for owner, reponame in OWNERS_REPOS: 
         try: 
             users_lines_of_code = requests.lines_of_code_by_user(owner, reponame)
-            print(f"Found {users_lines_of_code}")
             for user, lines_of_code in users_lines_of_code.items(): 
                 if user not in all_user_lines_of_code: 
                     all_user_lines_of_code[user] = lines_of_code 
@@ -150,7 +149,6 @@ def get_repos_in_use():
         all_repos.append(reponame)
 
     return jsonify(all_repos)
-
 
     
 
