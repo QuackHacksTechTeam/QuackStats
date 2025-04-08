@@ -5,7 +5,6 @@ from gh_requests.exclude_loc import is_excluded_file
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-
 def lines_of_code_by_user(owner: str, repo_name: str) -> dict[str, int]: 
     """
     Returns a dict containng usernames and the total lines of 

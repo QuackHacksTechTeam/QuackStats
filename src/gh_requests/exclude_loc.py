@@ -1,5 +1,5 @@
 
-LINE_THRESHOLD = 1000 
+LINE_THRESHOLD = 2000 
 EXCLUDED_PATHS = [
     "node_modules",  # Node.js dependencies
     "dist",           # Distribution files
@@ -29,6 +29,35 @@ EXCLUDED_PATHS = [
     "*.sqlite", "*.db"  # Database files
 ]
 
+INCLUDED_EXTENSIONS = [
+    # General Purpose Languages
+    ".c", ".h", ".cpp", ".cc", ".cxx", ".hpp", ".cs", ".java", ".py",
+    ".js", ".mjs", ".cjs", ".ts", ".tsx", ".go", ".rs", ".swift", ".kt", ".kts", ".dart",
+    
+    # Web Development
+    ".html", ".htm", ".css", ".scss", ".sass", ".less", ".php", ".rb", ".aspx", ".cshtml",
+    ".twig", ".liquid",
+
+    # Shell and Scripting
+    ".sh", ".ps1", ".psm1", ".bat", ".cmd", ".pl", ".perl",
+
+    # Data Science & Config
+    ".r", ".jl", ".ipynb",
+
+    # Low-Level & Embedded
+    ".asm", ".s", ".v", ".sv", ".vhdl", ".ino",
+
+    # Database & Query
+    ".sql", ".psql",
+
+    # Functional Languages
+    ".hs", ".lhs", ".ml", ".mli", ".fs", ".fsi", ".fsx", ".clj", ".cljs", ".edn", ".lisp", ".scm", ".rkt",
+
+    # Misc
+    ".lua", ".coffee"
+]
+
+
 def is_excluded_file(file) -> bool: 
     """
     Used to check if a file commitment was likely to come from a 
@@ -40,6 +69,7 @@ def is_excluded_file(file) -> bool:
 
     if any(excluded_path in file.filename for excluded_path in EXCLUDED_PATHS):
         return True 
+    
 
     return False
     
