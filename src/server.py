@@ -61,6 +61,7 @@ def get_repo_lines_of_code():
             repo_data = { "repo_name": reponame, "lines_of_code": repo_loc } 
             all_repo_loc.append(repo_data)
         except Exception as error: 
+            print(error)
             return jsonify({ "Error": str(error)}), 500
 
     return jsonify(all_repo_loc)
@@ -93,6 +94,7 @@ def get_user_lines_of_code():
                     all_user_lines_of_code[user] += lines_of_code 
 
         except Exception as error:  
+            print(error)
             return jsonify({ "Error": str(error) }), 500
 
     all_user_commit_labeled = [{"username": user, "lines_of_code": count} for user, count in all_user_lines_of_code.items()]
@@ -118,8 +120,9 @@ def get_repo_commits():
             repo_commits = requests.commit_history_by_repo(owner, reponame)
             all_repo_commits.append(repo_commits)
 
-        except Exception: 
-            return jsonify({ "Error": "Invalid GitHub API request" }), 500
+        except Exception as error: 
+            print(error)
+            return jsonify({ "Error": str(error) }), 500
 
     all_repo_commits_labeld = [{"repo_name": list(item.keys())[0], "commits": list(item.values())[0]} for item in all_repo_commits]
     
@@ -154,8 +157,9 @@ def get_user_commits():
                 else: 
                     all_user_commits[user] += num_commits
 
-        except Exception:  
-            return jsonify({ "Error": "Invalid GitHub API request" }), 500
+        except Exception as error:  
+            print(error)
+            return jsonify({ "Error": str(error) }), 500
 
     all_user_commit_labeled = [{"username": user, "commits": count} for user, count in all_user_commits.items()]
     return jsonify(all_user_commit_labeled)

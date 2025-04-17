@@ -1,24 +1,31 @@
 
-from github import Github
+from github import Github 
 import os
-from gh_requests.exclude_loc import is_excluded_file
+from gh_requests.exclude_loc import is_excluded_file 
+import base64
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
 
 def lines_of_code_by_repo(owner: str, repo_name: str) -> int: 
     """
     Returns the total lines of code from a repo 
+
+    Does not include new lines 
     """
     g = Github(GITHUB_TOKEN)
     repo = g.get_repo(f"{owner}/{repo_name}")
 
-    commits = repo.get_commits()
+    latest_commit = repo.get_branch(repo.default_branch).commit
+    tree = repo.get_git_tree(latest_commit.sha, recursive=True)
     total_lines = 0
-    for commit in commits: 
-        for file in commit.files: 
-            if is_excluded_file(file): 
-                continue
-            total_lines += file.additions - file.deletions
+
+    for element in tree.tree:
+        if element.type == "blob" and not is_excluded_file(element.path):
+            blob = repo.get_git_blob(element.sha)
+            content = base64.b64decode(blob.content).decode("utf-8", errors="ignore")
+            non_empty_lines = [line for line in content.splitlines() if line.strip()]
+            total_lines += len(non_empty_lines)
     return total_lines
 
 
@@ -26,6 +33,9 @@ def lines_of_code_by_user(owner: str, repo_name: str) -> dict[str, int]:
     """
     Returns a dict containng usernames and the total lines of 
     code they have contributed to the repo 
+
+
+    IN PROGRESS 
 
     """
     g = Github(GITHUB_TOKEN)
@@ -36,14 +46,27 @@ def lines_of_code_by_user(owner: str, repo_name: str) -> dict[str, int]:
     user_line_counts = {}
 
     for contributer in contributers: 
-        commits = repo.get_commits(author=contributer)
+        seen_files = set()
         total_lines = 0
+        commits = repo.get_commits(author=contributer)
 
-        for commit in commits: 
-            for file in commit.files: 
-                if is_excluded_file(file): 
+        for commit in commits:
+            for file in commit.files:
+                if file.status == "removed" or is_excluded_file(file.filename):
                     continue
-                total_lines += file.additions - file.deletions
+                
+                key = (file.filename, commit.sha)
+                if key in seen_files:
+                    continue
+                
+                seen_files.add(key)
+                
+                blob = repo.get_git_blob(file.sha)
+                if blob.encoding == "base64":
+                    content = base64.b64decode(blob.content).decode('utf-8', errors='ignore')
+                    lines = [line for line in content.splitlines() if line.strip() != '']
+                    total_lines += len(lines) - file.deletions
+
         user_line_counts[contributer.login] = total_lines
 
     return user_line_counts
