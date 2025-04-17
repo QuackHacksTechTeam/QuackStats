@@ -24,8 +24,8 @@ PORT = int(os.getenv("PORT", 5000))
 HOST = os.getenv("HOST", "localhost")
 
 REPO_TEXT_FILE = "../repos.txt"
-# A list of tuples, containing owner, repo 
-OWNERS_REPOS = parse_urls(read_urls(REPO_TEXT_FILE))
+# owner, repo 
+OWNERS_REPOS: tuple[str, str] = parse_urls(read_urls(REPO_TEXT_FILE))
 # ---------------------------------------------------
 
 
@@ -37,6 +37,34 @@ def serve_react_app(path):
 
 
 # ----------------------- API --------------------------
+
+@app.route('/api/repo-loc', methods=["GET"])
+def get_repo_lines_of_code(): 
+    """
+    Sends the total lines of code of all repos 
+
+    In the json form 
+    [
+        {
+            repo_name: string
+            lines_of_code: number
+        }
+    ]
+    ...
+    
+    """
+    all_repo_loc = [] 
+
+    for owner, reponame in OWNERS_REPOS: 
+        try: 
+            repo_loc = requests.lines_of_code_by_repo(owner, reponame)
+            repo_data = { "repo_name": reponame, "lines_of_code": repo_loc } 
+            all_repo_loc.append(repo_data)
+        except Exception as error: 
+            return jsonify({ "Error": str(error)}), 500
+
+    return jsonify(all_repo_loc)
+
 
 @app.route('/api/user-loc', methods=["GET"])
 def get_user_lines_of_code(): 
@@ -154,6 +182,7 @@ def get_repos_in_use():
 
 if __name__ == "__main__": 
     app.run(host=HOST, port=PORT, debug=True)
+
 
 
 

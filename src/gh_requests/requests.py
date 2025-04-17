@@ -5,6 +5,23 @@ from gh_requests.exclude_loc import is_excluded_file
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
+def lines_of_code_by_repo(owner: str, repo_name: str) -> int: 
+    """
+    Returns the total lines of code from a repo 
+    """
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_repo(f"{owner}/{repo_name}")
+
+    commits = repo.get_commits()
+    total_lines = 0
+    for commit in commits: 
+        for file in commit.files: 
+            if is_excluded_file(file): 
+                continue
+            total_lines += file.additions - file.deletions
+    return total_lines
+
+
 def lines_of_code_by_user(owner: str, repo_name: str) -> dict[str, int]: 
     """
     Returns a dict containng usernames and the total lines of 

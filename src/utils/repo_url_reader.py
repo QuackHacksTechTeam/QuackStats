@@ -41,3 +41,6 @@ def parse_urls(urls: list[str]) -> list[tuple[str, str]]:
 
 
 
+
+
+
